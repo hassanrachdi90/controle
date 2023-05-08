@@ -1,0 +1,60 @@
+ const { Client, AccountCreateTransaction, TokenCreateTransaction, TokenMintTransaction, TransferTransaction } = require("@hashgraph/sdk");
+
+// Set up client
+const operatorId = "<OPERATOR_ID>";
+const operatorPrivateKey = "<OPERATOR_PRIVATE_KEY>";
+const client = new Client({
+  network: { "0.testnet.hedera.com:50211": "0.0.3" },
+  operator: {
+    account: operatorId,
+    privateKey: operatorPrivateKey
+  }
+});
+
+// Set up accounts
+const accountIdA = "<ACCOUNT_ID_A>";
+const accountPrivateKeyA = "<ACCOUNT_PRIVATE_KEY_A>";
+const accountPublicKeyA = "<ACCOUNT_PUBLIC_KEY_A>";
+const accountIdB = "<ACCOUNT_ID_B>";
+const accountPrivateKeyB = "<ACCOUNT_PRIVATE_KEY_B>";
+const accountPublicKeyB = "<ACCOUNT_PUBLIC_KEY_B>";
+const accountIdC = "<ACCOUNT_ID_C>";
+const accountPrivateKeyC = "<ACCOUNT_PRIVATE_KEY_C>";
+const accountPublicKeyC = "<ACCOUNT_PUBLIC_KEY_C>";
+// Set up NFT collection properties
+const collectionMemo = "My NFT Collection";
+const adminKey = client.generatePrivateKey();
+const supplyKey = client.generatePrivateKey();
+const feeScheduleKey = client.generatePrivateKey();
+const royaltyFee = 0.05; // 5%
+
+async function main() {
+  // Create accounts A, B, and C
+  const accountCreateTxA = await new AccountCreateTransaction()
+    .setKey(accountPublicKeyA)
+    .setInitialBalance(1000)
+    .execute(client);
+
+  const accountCreateTxB = await new AccountCreateTransaction()
+    .setKey(accountPublicKeyB)
+    .setInitialBalance(1000)
+    .execute(client);
+
+  const accountCreateTxC = await new AccountCreateTransaction()
+    .setKey(accountPublicKeyC)
+    .setInitialBalance(1000)
+    .execute(client);
+const tokenReceipt = await tokenCreateTx.getReceipt(client);
+  const tokenId = tokenReceipt.tokenId.toString();
+  console.log(`NFT collection created with ID ${tokenId}`);
+
+  // Mint NFT
+  const metadata = { name: "My NFT #1", description: "My first NFT" };
+  const mintTx = await new TokenMintTransaction()
+    .setTokenId(tokenId)
+    .setMetadata(JSON.stringify(metadata))
+    .execute(client);
+
+  const mintReceipt = await mintTx.getReceipt(client);
+  const serial = mintReceipt.serials[0].toString();
+  console.log(`NFT minted with serial number ${serial}`);
